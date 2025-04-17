@@ -27,37 +27,14 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Deploy') {
-            when {
-                expression { env.GIT_BRANCH != "origin/main" }
-            }
+        stage('Docker build') {
             steps {
-                sh ' echo This is Deploy'
-                //error 'pipeline failed'
+                sh """
+                docker build -t jayakrishna1993/backend:${appVersion}
+                docker images
+                """
             }
         }
-        stage('Print params') {
-            steps {
-                echo "Hello ${params.PERSON}"                   // params is the reserved keyword //
-                echo "Biography:  ${params.BIOGRAPHY}"
-                echo "Toggle: ${params.TOGGLE}"
-                echo "Choice: ${params.CHOICE}"
-                echo "Password: ${params.PASSWORD}"
-            }
-        }
-        // stage('Approval') {
-        //     input {
-        //         message "Should we continue?"
-        //         ok "Yes, we should."
-        //         submitter "alice,bob"
-        //         parameters {
-        //             string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-        //         }
-        //     }
-        //     steps {
-        //         echo "Hello, ${PERSON}, nice to meet you."
-        //     }
-        // }
     }
         post { 
         always { 
