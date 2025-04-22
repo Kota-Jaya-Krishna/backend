@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: expense
+  # labels of deployemnt resource
+  labels:
+    app: backend
+    tier: backend
+    project: expense
+spec:
+  replicas: 2
+  selector:
+  # As we have many pods ,we should give what labels the deployment to match
+    matchLabels:
+      app: backend
+      tier: backend
+      project: expense
+  # pod template
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: backend
+        project: expense
+    spec:
+      containers:
+      - name: expense
+        image: "{{ .Values.deployment.image_URL }}:{{ .Values.deployment.imageversion }}"
+        envFrom:
+        - configMapRef:
+            name: backend

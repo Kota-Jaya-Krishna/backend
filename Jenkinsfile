@@ -27,11 +27,13 @@ pipeline {
                 }
             }
         }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
+
         stage('Docker build') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-creds') {
@@ -48,6 +50,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                withAWS(region: 'us-east-1', credentials: 'aws-creds') {
+                    sh """
+                        aws eks update-kubeconfig --region ${region} --name ${project}-${environment}
+                        cd helm
+                        sed -i 's/IMAGE_VERSION/${appVersion}/g' values-${environment}.yaml
+                        helm upgrade --install ${component} -n ${project} -f values-${environment}.yaml .
+
+                    """
+                }
+            }
+        }
+        
     }
         post { 
         always { 
