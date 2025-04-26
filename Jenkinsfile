@@ -34,6 +34,18 @@ pipeline {
             }
         }
 
+        stage('SonarQube analysis') {
+            environment {
+                SCANNER_HOME = tool 'Sonar-6.0'   //scanner configuration
+            }
+            steps {
+                //sonar server injection
+                withSonarQubeEnv('sonar-6.0') {
+                    sh '$SCANNER_HOME/bin/sonar-scanner'     //sonar-scanner will read the sonar-project.properties file// 
+                }
+            }
+        }
+
         stage('Docker build') {
             steps {
                 withAWS(region: 'us-east-1', credentials: 'aws-creds') {
